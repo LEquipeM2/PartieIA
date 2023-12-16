@@ -1,0 +1,9 @@
+pyannote.audio
+numpy
+pyannote.core
+pyannotebook
+ipywidgets
+ipyevents
+torch
+torchvision
+torchaudio
