@@ -1,3 +1,5 @@
+# Code mis à disposition par Alexis PLAQUET et repris pour le projet
+
 import functools
 from typing import Callable, Optional, Text, Union
 
