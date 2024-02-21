@@ -1,2 +1,15 @@
 datasets-pyannote
 amicorpus
+test
+pyannote2
+lightning_logs
+venv
+Include
+Lib
+.venv
+.jupyter
+.ipynb_checkpoints
+Scripts
+.idea
+__pycache__
+code/__pycache__

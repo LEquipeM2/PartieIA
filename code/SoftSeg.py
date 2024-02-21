@@ -5,7 +5,7 @@ from typing import Callable, Optional, Text, Union
 
 import numpy as np
 import torch
-from pyannote.core import Annotation, SlidingWindow, SlidingWindowFeature
+from pyannote.core import Annotation, SlidingWindow, SlidingWindowFeature, Segment
 
 from pyannote.audio import Inference, Model, Pipeline
 from pyannote.audio.core.io import AudioFile
@@ -236,3 +236,53 @@ class SoftSpeakerSegmentation(Pipeline):
         return Inference.aggregate(
             permutated_segmentations, self._frames, hamming=False, skip_average=False
         )
+    
+    # Cette fonction récupère X% des zones de confiance faible
+def find_low_confiance_frames(segmentation, threshold=0.50, window_size=5.0, annotated_ratio=0.5):
+    """
+    Identify frames with confiance lower than the specified threshold using a sliding window.
+
+    Parameters:
+    - segmentation: segmentationFeature
+        segmentationFeature containing the probabilities of each speaker.
+    - threshold: float, optional
+        confiance threshold, below which frames are considered low confiance.
+    - window_size: float, optional
+        Size of the sliding window in seconds.
+    - annotated_ratio: float, optional
+        Ratio of the lowest confiance frames to return.
+
+    Returns:
+    - list of segments
+        List of segments with low confiance.
+    """
+
+    def sliding_window(elements, window_size,step):    
+        if len(elements) <= window_size:
+            return elements
+        for i in range(0,len(elements)- window_size + 1,step):
+            yield elements[i:i+window_size]
+        #add the last window
+        if len(elements) % window_size != 0:
+            yield elements[-window_size:]
+    
+    segments = []
+    window_size = int(window_size/segmentation.sliding_window.step)
+    windows = sliding_window(segmentation.data,window_size,window_size)
+    
+    for i,window in enumerate(windows):
+        #transform nan to 0
+        window = np.nan_to_num(window)
+        maxi_prob = np.max(window)
+        second_maxi_prob = np.sort(window)[-2]
+        confiance = maxi_prob - second_maxi_prob
+        confiance_moyenne = np.mean(confiance)
+        if confiance_moyenne < threshold:
+            segments.append([(i*window_size, i*window_size+window_size), confiance_moyenne])
+
+    segments.sort(key=lambda x: x[1])
+    segments = [[Segment(segment[0][0]*segmentation.sliding_window.step, segment[0][1]*segmentation.sliding_window.step), segment[1]] for segment in segments]
+    segments = segments[:int(len(segments)*annotated_ratio)]
+    segments = [x[0] for x in segments]
+    segments.sort(key=lambda x: x.start)
+    return segments
