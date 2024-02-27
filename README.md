@@ -1,9 +1,8 @@
 # chefoeuvre
 chef d'oeuvre M2
-<br/>Le dossier 'MSDWILD' contenant le dataset n'est pas push sur git
+<br/>Le dossier contenant le dataset n'est pas push sur git
 
 # TO DO
-- Les résultats du fine tuning sont moins bons que le pre-trained => trouver pourquoi
-- (Probleme sur PC perso avec pyannote.database.registry)
-- Finir l'affichage de l'annotation manuelle
-- Tester l'annotation manuelle avec le nouveau pyannotebook
+- Comprendre pourquoi les modèle finetuné est légèrement moins bon que le pre-trained (probablement lié à une mauvaise annotation)
+- Tester le modèle finetuné sur msdwild sur les données ami
+- Tester le modèle finetuné sur ami sur les données msdwild

@@ -4,6 +4,5 @@ pyannote.core
 pyannotebook
 ipywidgets
 ipyevents
-torch
-torchvision
-torchaudio
+matplotlib
+pandas
