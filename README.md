@@ -1,4 +1,4 @@
-chef d'oeuvre M2
+Chef d'oeuvre M2
 <br/>Le dossier contenant le dataset n'est pas push sur git
 
 # Updates :
@@ -13,6 +13,6 @@ chef d'oeuvre M2
 - méthode : possibilité de choisir entre 'random' et 'lowest' pour spécifier si on veut choisir les samples aléatoirement ou ceux de plus basse confiance.
 
 # Fine tuning :
-- Sur AMI : DER pretrained : 19.2 % / DER fine-tuned : 18.9 % avec 20 epochs et un learning rate de 0.0001
+- Sur AMI : DER pretrained : 19.2 % / DER fine-tuned : 18.9 % avec 20 epochs et un learning rate de 0.0001 et optimiseur SGD
 - Sur Msdwild : DER pretrained : / DER fine-tuned : 
 

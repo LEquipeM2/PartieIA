@@ -131,17 +131,11 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
             wav_file = dataset_path+"/wav/"+file+sufixe+".wav"
             soft_segmentation: segmentation.SlidingWindowFeature = pipeline(wav_file)
             low_confiance_segments = alternative_find_low_confidence_frames(file, soft_segmentation, threshold, window_size, annotated_ratio, mode, uem_file, keep_method)
-            
             if len(low_confiance_segments) == 0:
                 continue
             if mode =='sample':
                 write_data_sample(file, low_confiance_segments,dataset_path)
-            
-
-        #==================================================================================================
-            #### A REMETTRE AVEC UN TAB
             finetune_files.write(file+'\n')
-        #==================================================================================================
         finetune_files.close()
         if mode == 'dataset':
             write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path)
