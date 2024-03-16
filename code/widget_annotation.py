@@ -49,7 +49,26 @@ def create_buttons():
     layout=widgets.Layout(display="flex", flex_flow="column", align_items="flex-start", width="auto", height="auto"),
     style={"description_width": "initial"}
     )
-    return annotated_ratio_widget, window_size_widget, threshold_widget,widget_text_file
+
+    mode_widget = widgets.RadioButtons(
+    options=['dataset', 'sample'],
+    value='sample',
+    description='Apply annotated ratio on the full dataset or on each sample ?',
+    disabled=False,
+    layout=widgets.Layout(display="flex", flex_flow="column", align_items="flex-start", width="auto", height="auto"),
+    style={"description_width": "initial"}
+    )
+
+    method_widget = widgets.RadioButtons(
+    options=['random', 'lowest'],
+    value='lowest',
+    description='Method to select the samples to annotate :',
+    disabled=False,
+    layout=widgets.Layout(display="flex", flex_flow="column", align_items="flex-start", width="auto", height="auto"),
+    style={"description_width": "initial"}
+    )
+
+    return annotated_ratio_widget, window_size_widget, threshold_widget,widget_text_file, mode_widget, method_widget
 
 
 def create_generate_set_button():
@@ -66,7 +85,7 @@ def create_generate_set_button():
     def on_value_change(change):
       if change.new == "Yes":
         clear_output(wait=True)
-        annotated_ratio_widget, window_size_widget, threshold_widget, widget_text_file = create_buttons()
+        annotated_ratio_widget, window_size_widget, threshold_widget, widget_text_file,mode_widget, method_widget = create_buttons()
         # annotated_ratio, window_size, threshold, xtrain_file = annotated_ratio_widget.value, window_size_widget.value, threshold_widget.value, widget_text_file.value
         # generate_set_bool = True
         validate_button1 = widgets.Button(description="Validate",
@@ -78,18 +97,19 @@ def create_generate_set_button():
         def on_button_clicked(b):
             annotated_ratio, window_size, threshold, xtrain_file = annotated_ratio_widget.value, window_size_widget.value, threshold_widget.value, widget_text_file.value
             generate_set_bool = True
+            mode, method = mode_widget.value, method_widget.value
             # validate_button1 = widgets.Button(description="Validate",
             #                                 layout=widgets.Layout(display="flex",
             #                                             flex_flow="column",
             #                                             align_items="flex-start",
             #                                             width="auto", height="auto"))
         
-            create_manual_annotation_button(annotated_ratio, window_size, threshold, generate_set_bool, suffixe, xtrain_file)
+            create_manual_annotation_button(annotated_ratio, window_size, threshold, generate_set_bool, suffixe, xtrain_file, mode, method)
 
         validate_button1.on_click(on_button_clicked)
 
         # param_buttons()
-        display(generate_set, widget_text_file, annotated_ratio_widget, window_size_widget, threshold_widget, validate_button1)
+        display(generate_set, widget_text_file, annotated_ratio_widget, window_size_widget, threshold_widget,mode_widget,method_widget ,validate_button1)
       else:
         clear_output(wait=True)
         # param_buttons()
@@ -108,7 +128,7 @@ def create_generate_set_button():
                                                  width="auto", height="auto"))
 
     def on_button_clicked(b):
-        create_manual_annotation_button(annotated_ratio, window_size, threshold, generate_set_bool, suffixe, xtrain_file)
+        create_manual_annotation_button(annotated_ratio, window_size, threshold, generate_set_bool, suffixe, xtrain_file, mode, method)
 
     validate_button.on_click(on_button_clicked)
     display(validate_button)
@@ -177,7 +197,7 @@ def param_buttons():
 
 
 
-def create_manual_annotation_button(annotated_ratio, window_size, threshold,generate_set_bool, suffixe, xtrain_file):
+def create_manual_annotation_button(annotated_ratio, window_size, threshold,generate_set_bool, suffixe, xtrain_file, mode, method):
     button = widgets.Button(description="Launch Manual Annotation", 
                             layout=widgets.Layout(display="flex",
                                                  flex_flow="column", 
@@ -185,7 +205,7 @@ def create_manual_annotation_button(annotated_ratio, window_size, threshold,gene
                                                  width="auto", height="auto"))
 
     def on_button_clicked(b):
-        manual_annotation(dataset_path, xtrain_file,fine_tuned_file, HF_token, generate_set_bool, annotated_ratio, window_size, threshold, suffixe)
+        manual_annotation(dataset_path, xtrain_file,fine_tuned_file, HF_token, mode,method,generate_set_bool, annotated_ratio, window_size, threshold, suffixe)
     button.on_click(on_button_clicked)
     display(button)
 

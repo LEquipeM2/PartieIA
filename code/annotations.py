@@ -48,7 +48,7 @@ def annotate_sample(dataset_path,fine_tuned_file, num_samples_processed,iter_sam
 
     button.on_click(lambda b: on_button_clicked(b, next_item,widget,fine_tuned_file))
 
-def manual_annotation(dataset_path, xtrain_file_name, fine_tuned_file, HF_token, generate_set=True ,annotated_ratio=0.3, window_size=7.5, threshold=0.5, suffixe=""):
+def manual_annotation(dataset_path, xtrain_file_name, fine_tuned_file, HF_token,mode,method, generate_set=True ,annotated_ratio=0.3, window_size=7.5, threshold=0.5, suffixe=""):
     #Etape 1 : faire la segmentation et calcul low confidence segments
     #Dictionnaire qui contiendra les segments de basse confiance
     dico_samples = {}
@@ -67,7 +67,7 @@ def manual_annotation(dataset_path, xtrain_file_name, fine_tuned_file, HF_token,
         for sample in tqdm(data):
             wav_path = dataset_path+'/wav/'+sample+'.wav'
             soft_segmentation: segmentation.SlidingWindowFeature = pipeline(wav_path)
-            low_conf_seg = alternative_find_low_confidence_frames(soft_segmentation, threshold, window_size, annotated_ratio)
+            low_conf_seg = alternative_find_low_confidence_frames(sample,soft_segmentation, threshold, window_size, annotated_ratio,dataset_path+'/lists/alltimelines.uem',mode,method)
             dico_samples[sample] = low_conf_seg
         #Sauvegarde le dictionnaire pour réutilisation
         with open("low_conf_dico.pkl", "wb") as f:
