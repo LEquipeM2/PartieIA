@@ -44,8 +44,8 @@ def display_choices():
         else:
             x_train_path = "datasets-pyannote/ami/lists/train.mini.txt"
             dataset_path = "datasets-pyannote/ami"
-        widget_mode, widget_method, widget_annotated_ratio, widget_windows, widget_generete_ds = ds_choices(generate_new_dataset, x_train_path, dataset_path)
-        display(widget_mode, widget_method, widget_annotated_ratio, widget_windows, widget_generete_ds)
+        widget_mode, widget_method, widget_annotated_ratio, threshold_widget,widget_windows, widget_generete_ds = ds_choices(generate_new_dataset, x_train_path, dataset_path)
+        display(widget_mode, widget_method, widget_annotated_ratio, threshold_widget,widget_windows, widget_generete_ds)
         
     
     widget_validate.on_click(validate)
@@ -84,6 +84,15 @@ def ds_choices(generate_new_dataset, x_train_path, dataset_path ):
             style={"description_width": "initial"}
         )
 
+        threshold_widget = widgets.FloatText(
+            value=0.5,
+            description='Threshold of the confidence (float) :',
+            disabled=False,
+            adaptive_height=True,
+            layout=widgets.Layout(display="flex", flex_flow="column", align_items="flex-start", width="auto", height="auto"),
+            style={"description_width": "initial"}
+            )
+
         widget_windows = widgets.FloatText(
             value=7.5,
             step =0.5,
@@ -107,7 +116,8 @@ def ds_choices(generate_new_dataset, x_train_path, dataset_path ):
             method_value = widget_method.value
             annotated_ratio_value = widget_annotated_ratio.value
             windows_value = widget_windows.value
-            generate_dataset(x_train_path,dataset_path,"fine_uem.txt" ,"alltimelines.uem" ,pipeline,mode=mode_value, keep_method=method_value,window_size=windows_value,annotated_ratio=annotated_ratio_value)
+            confidence_threshold = threshold_widget.value
+            generate_dataset(x_train_path,dataset_path,"fine_uem.txt" ,"alltimelines.uem" ,pipeline,mode=mode_value, keep_method=method_value,window_size=windows_value,annotated_ratio=annotated_ratio_value, threshold=confidence_threshold)
 
         widget_generete_ds.on_click(launch_generate_dataset)
-        return widget_mode, widget_method, widget_annotated_ratio, widget_windows, widget_generete_ds
+        return widget_mode, widget_method, widget_annotated_ratio, threshold_widget,widget_windows, widget_generete_ds
