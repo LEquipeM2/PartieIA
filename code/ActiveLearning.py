@@ -133,11 +133,11 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
     manual_uem_path = dataset_path+"/manual_uems"
     if os.path.exists(manual_rttm_path):
         print(manual_rttm_path," deleted")
-    shutil.rmtree(manual_rttm_path)
+        shutil.rmtree(manual_rttm_path)
     os.makedirs(manual_rttm_path)
     if os.path.exists(manual_uem_path):
         print(manual_uem_path," deleted")
-    shutil.rmtree(manual_uem_path)
+        shutil.rmtree(manual_uem_path)
     os.makedirs(manual_uem_path)
 
     filename = dataset_path+"/lists/"+filename     
@@ -165,7 +165,7 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
         if mode == 'dataset':
             write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,finetune_files)
     print("Fine tuning files created in "+filename)
-    # finetune_files.close()
+    finetune_files.close()
 
 
 def write_data_sample(file, segments,dataset_path):
@@ -179,23 +179,22 @@ def write_data_sample(file, segments,dataset_path):
     new_annotations = annotation.crop(timeline)
     new_annotated = annotated.crop(timeline)
     written = False
+
     if len(new_annotations) != 0 and len(new_annotated) != 0:
-        if not os.path.exists(dataset_path+"/manual_rttm"):
-            os.makedirs(dataset_path+"/manual_rttm")
+
         with open(dataset_path+"/manual_rttm/"+file+".rttm", "w") as rttm:
             new_annotations.write_rttm(rttm)
-        rttm.close()
-        if not os.path.exists(dataset_path+"/manual_uems"):
-            os.makedirs(dataset_path+"/manual_uems")
+
         with open(dataset_path+"/manual_uems/"+file+".uem", "w") as uem:
             new_annotated.write_uem(uem)
-        uem.close()
+
         written = True
+
     return written
 
 def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,finetune_files):
-    uem = open(uem_file, "r")
-    uem = uem.readlines()
+    uemF = open(uem_file, "r")
+    uem = uemF.readlines()
     uem = [x.split() for x in uem]
     uem = [[x[0], float(x[1]), float(x[2]), float(x[3])] for x in uem]
     uem.sort(key=lambda x: x[3])
@@ -210,6 +209,6 @@ def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,fine
         written = write_data_sample(file, segments,dataset_path)
         if written:
             finetune_files.write(file+'\n')
-
+    uemF.close()
 
 
