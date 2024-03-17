@@ -146,11 +146,12 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
                 continue
             if mode =='sample':
                 write_data_sample(file, low_confiance_segments,dataset_path)
-            finetune_files.write(file+'\n')
-        finetune_files.close()
+                finetune_files.write(file+'\n')
+        
         if mode == 'dataset':
-            write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path)
+            write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,finetune_files)
     print("Fine tuning files created in "+filename)
+    # finetune_files.close()
 
 
 def write_data_sample(file, segments,dataset_path):
@@ -176,7 +177,7 @@ def write_data_sample(file, segments,dataset_path):
             new_annotated.write_uem(uem)
         uem.close()
 
-def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path):
+def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,finetune_files):
     uem = open(uem_file, "r")
     uem = uem.readlines()
     uem = [x.split() for x in uem]
@@ -186,10 +187,12 @@ def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path):
         uem = uem[:int(len(uem)*annotated_ratio)]
     elif keep_method == 'random':
         uem = random.sample( uem, int(len(uem)*annotated_ratio))
-    
+
     for sample in uem:
         file = sample[0]
+        finetune_files.write(file+'\n')
         segments = [Segment(sample[1], sample[2])]
         write_data_sample(file, segments,dataset_path)
+
 
 

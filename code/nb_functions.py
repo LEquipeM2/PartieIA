@@ -116,12 +116,12 @@ def ds_choices(generate_new_dataset, x_train_path, dataset_path ):
             annotated_ratio_value = widget_annotated_ratio.value
             windows_value = widget_windows.value
             confidence_threshold = threshold_widget.value
-            print("Generating dataset with the following parameters :\n")
-            print("Mode : ",mode_value+"\n")
-            print("Method : ",method_value+"\n")
-            print("Annotated ration : ",str(annotated_ratio_value)+"\n")
-            print("Window size :  ",str(windows_value)+"\n")
-            print("Confidence threshold : ",str(confidence_threshold)+"\n")
+            print("Generating dataset with the following parameters :")
+            print("Mode : ",mode_value)
+            print("Method : ",method_value)
+            print("Annotated ration : ",str(annotated_ratio_value))
+            print("Window size :  ",str(windows_value))
+            print("Confidence threshold : ",str(confidence_threshold))
 
             generate_dataset(x_train_path,dataset_path,"fine_uem.txt" ,"all_timelines.uem" ,pipeline,mode=mode_value, keep_method=method_value,window_size=windows_value,annotated_ratio=annotated_ratio_value, threshold=confidence_threshold)
 

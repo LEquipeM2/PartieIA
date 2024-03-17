@@ -76,7 +76,7 @@ def create_generate_set_button():
     generate_set = widgets.RadioButtons(
       options=['Yes', 'No'],
       value='No',
-      description='Generate a new fine tuned set ?',
+      description='Generate a new fine tuning set ?',
       disabled=False
    ) 
     generate_set_bool = False
