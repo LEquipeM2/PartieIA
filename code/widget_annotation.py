@@ -82,6 +82,9 @@ def create_generate_set_button():
     generate_set_bool = False
     annotated_ratio, window_size, threshold = 0.3, 7.5, 0.5
     xtrain_file = None
+    mode = 'sample'
+    method = 'lowest'
+    
     def on_value_change(change):
       if change.new == "Yes":
         clear_output(wait=True)
@@ -113,8 +116,8 @@ def create_generate_set_button():
       else:
         clear_output(wait=True)
         # param_buttons()
-        generate_set_bool = False
-        annotated_ratio, window_size, threshold = 0.3, 7.5, 0.5
+        # generate_set_bool = False
+        # annotated_ratio, window_size, threshold = 0.3, 7.5, 0.5
         display(generate_set)
 
 
@@ -128,6 +131,7 @@ def create_generate_set_button():
                                                  width="auto", height="auto"))
 
     def on_button_clicked(b):
+        
         create_manual_annotation_button(annotated_ratio, window_size, threshold, generate_set_bool, suffixe, xtrain_file, mode, method)
 
     validate_button.on_click(on_button_clicked)

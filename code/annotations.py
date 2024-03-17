@@ -17,7 +17,8 @@ def annotate_sample(dataset_path,fine_tuned_file, num_samples_processed,iter_sam
     next_item = next(iter_samples) 
     
     widget = pyannotebook_reborn.Pyannotebook(dataset_path+"/wav/"+next_item+".wav")
-    widget.timelines = dico_samples[next_item]
+    timeline = dico_samples[next_item].tolist()
+    widget.timelines = timeline
     print(f"Please annotate the low confidence segment(s) shown and click on the save button to save the annotation for the file {next_item}\n{num_samples_remaining} samples remaining to annotate.")
     display(widget)
     
@@ -38,7 +39,7 @@ def annotate_sample(dataset_path,fine_tuned_file, num_samples_processed,iter_sam
         if num_samples_remaining > 0:
             # next_item = next(iter_samples)
             clear_output() 
-            widget = pyannotebook_reborn.Pyannotebook(dataset_path+"/wav/"+next_item+".wav")
+            # widget = pyannotebook_reborn.Pyannotebook(dataset_path+"/wav/"+next_item+".wav")
             annotate_sample(dataset_path,fine_tuned_file,num_samples_processed,iter_samples,dico_samples)
             
         else:
@@ -67,7 +68,7 @@ def manual_annotation(dataset_path, xtrain_file_name, fine_tuned_file, HF_token,
         for sample in tqdm(data):
             wav_path = dataset_path+'/wav/'+sample+'.wav'
             soft_segmentation: segmentation.SlidingWindowFeature = pipeline(wav_path)
-            low_conf_seg = alternative_find_low_confidence_frames(sample,soft_segmentation, threshold, window_size, annotated_ratio,dataset_path+'/lists/alltimelines.uem',mode,method)
+            low_conf_seg = find_low_confiance_frames(sample,soft_segmentation, threshold, window_size, annotated_ratio,mode,dataset_path+'/lists/all_timelines.uem',method)
             dico_samples[sample] = low_conf_seg
         #Sauvegarde le dictionnaire pour réutilisation
         with open("low_conf_dico.pkl", "wb") as f:

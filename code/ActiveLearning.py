@@ -9,7 +9,7 @@ import torch
 from torch import avg_pool1d
 import random
 
-def find_low_confiance_frames(segmentation, threshold, window_size, annotated_ratio):
+def find_low_confiance_frames(sample,segmentation, threshold, window_size, annotated_ratio, mode, file,keep_method):
     """
     Identify frames with confiance lower than the specified threshold using a sliding window.
 
@@ -53,8 +53,18 @@ def find_low_confiance_frames(segmentation, threshold, window_size, annotated_ra
     segments.sort(key=lambda x: x[1])
     segments = [[Segment(segment[0][0]*segmentation.sliding_window.step, segment[0][1]*segmentation.sliding_window.step), segment[1]] for segment in segments]
     segments = segments[:int(len(segments)*annotated_ratio)]
+    segments2 = segments
     segments = [x[0] for x in segments]
     segments.sort(key=lambda x: x.start)
+    if mode == 'sample' and keep_method == 'lowest':
+        segments = segments[:int(len(segments)*annotated_ratio)]
+    elif mode == 'sample' and keep_method == 'random':
+        segments = np.random.choice(segments, int(len(segments)*annotated_ratio), replace=False)
+
+    with open(file, "a") as f:
+        for segment in segments2:
+            f.write(sample + ' ' + str(segment[0].start) + ' ' + str(segment[0].end) + ' ' + str(segment[1].item()) + '\n')
+    f.close()
     return segments
 
 def alternative_find_low_confidence_frames(sample, segments, threshold, window_size, annotated_ratio, mode, file,keep_method):
@@ -130,7 +140,8 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
             file = file[:-1]
             wav_file = dataset_path+"/wav/"+file+sufixe+".wav"
             soft_segmentation: segmentation.SlidingWindowFeature = pipeline(wav_file)
-            low_confiance_segments = alternative_find_low_confidence_frames(file, soft_segmentation, threshold, window_size, annotated_ratio, mode, uem_file, keep_method)
+            # low_confiance_segments = alternative_find_low_confidence_frames(file, soft_segmentation, threshold, window_size, annotated_ratio, mode, uem_file, keep_method)
+            low_confiance_segments = find_low_confiance_frames(file, soft_segmentation, threshold, window_size, annotated_ratio, mode, uem_file, keep_method)
             if len(low_confiance_segments) == 0:
                 continue
             if mode =='sample':
