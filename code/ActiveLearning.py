@@ -8,6 +8,7 @@ import numpy as np
 import torch
 from torch import avg_pool1d
 import random
+import shutil
 
 def find_low_confiance_frames(sample,segmentation, threshold, window_size, annotated_ratio, mode, file,keep_method):
     """
@@ -127,6 +128,18 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
         sufixe ='.Mix-Headset'
     else:
         sufixe = ''
+
+    manual_rttm_path = dataset_path+"/manual_rttm"
+    manual_uem_path = dataset_path+"/manual_uems"
+    if os.path.exists(manual_rttm_path):
+        print(manual_rttm_path," deleted")
+    shutil.rmtree(manual_rttm_path)
+    os.makedirs(manual_rttm_path)
+    if os.path.exists(manual_uem_path):
+        print(manual_uem_path," deleted")
+    shutil.rmtree(manual_uem_path)
+    os.makedirs(manual_uem_path)
+
     filename = dataset_path+"/lists/"+filename     
     finetune_files = open(filename, "w")
     uem_file = dataset_path+'/'+uem_file_name 
@@ -145,8 +158,9 @@ def generate_dataset(x_train_file_path, dataset_path, filename, uem_file_name ,p
             if len(low_confiance_segments) == 0:
                 continue
             if mode =='sample':
-                write_data_sample(file, low_confiance_segments,dataset_path)
-                finetune_files.write(file+'\n')
+                written = write_data_sample(file, low_confiance_segments,dataset_path)
+                if written:
+                    finetune_files.write(file+'\n')
         
         if mode == 'dataset':
             write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,finetune_files)
@@ -164,7 +178,7 @@ def write_data_sample(file, segments,dataset_path):
     timeline.uri = file                
     new_annotations = annotation.crop(timeline)
     new_annotated = annotated.crop(timeline)
-    
+    written = False
     if len(new_annotations) != 0 and len(new_annotated) != 0:
         if not os.path.exists(dataset_path+"/manual_rttm"):
             os.makedirs(dataset_path+"/manual_rttm")
@@ -176,6 +190,8 @@ def write_data_sample(file, segments,dataset_path):
         with open(dataset_path+"/manual_uems/"+file+".uem", "w") as uem:
             new_annotated.write_uem(uem)
         uem.close()
+        written = True
+    return written
 
 def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,finetune_files):
     uem = open(uem_file, "r")
@@ -190,9 +206,10 @@ def write_data_dataset(uem_file, keep_method, annotated_ratio, dataset_path,fine
 
     for sample in uem:
         file = sample[0]
-        finetune_files.write(file+'\n')
         segments = [Segment(sample[1], sample[2])]
-        write_data_sample(file, segments,dataset_path)
+        written = write_data_sample(file, segments,dataset_path)
+        if written:
+            finetune_files.write(file+'\n')
 
 
 
