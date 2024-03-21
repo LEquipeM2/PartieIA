@@ -18,14 +18,31 @@ def annotate_sample(dataset_path,fine_tuned_file, num_samples_processed,iter_sam
     
     widget = pyannotebook_reborn.Pyannotebook(dataset_path+"/wav/"+next_item+".wav")
     timeline = dico_samples[next_item]
-    if type(timeline) != list:
-        timeline = timeline.tolist()
-    widget.timelines = timeline
-    print(f"Please annotate the low confidence segment(s) shown and click on the save button to save the annotation for the file {next_item}\n{num_samples_remaining} samples remaining to annotate.")
-    display(widget)
-    
     button = widgets.Button(description="Save")
-    display(button)
+    #check if timeline is not empty
+    if len(timeline) != 0:
+        if type(timeline) != list:
+            timeline = timeline.tolist()
+        widget.timelines = timeline
+        print(f"Please annotate the low confidence segment(s) shown and click on the save button to save the annotation for the file {next_item}\n{num_samples_remaining} samples remaining to annotate.")
+        time_list = [["Start : "+str(round(t.start,2)), "End : "+str(round(t.end,2))] for t in timeline]
+        print("Timestamps to annotate : ")
+        for time in time_list:
+            print(time)
+        display(widget)
+        
+        
+        display(button)
+    else:
+        print(f"No low confidence segments found for {next_item}. Skipping to the next sample.")
+        if num_samples_remaining > 0:
+            clear_output() 
+            annotate_sample(dataset_path,fine_tuned_file, num_samples_processed,iter_samples,dico_samples)
+        else:
+            fine_tuned_file.close()
+            clear_output() 
+            print("All samples have been annotated.")
+            return
     
     def on_button_clicked(b, next_item,widget,fine_tuned_file):
         fine_tuned_file.write(next_item+'\n')
